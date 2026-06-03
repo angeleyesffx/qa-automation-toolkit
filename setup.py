@@ -74,7 +74,7 @@ setup(
         'fallback_version': '0.0.4',
     },
     license='MIT',
-    description='  ',
+    description='QA automation utilities for test data, payload, and request workflows.',
     long_description='{}\n{}'.format(
         re.compile('^.. start-badges.*^.. end-badges', re.M | re.S).sub('', read('README.rst')),
         re.sub(':[a-z]+:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst')),
