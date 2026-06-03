@@ -1,0 +1,59 @@
+name: Playwright Cucumber Tests
+
+on:
+  push:
+    paths:
+      - 'playwright-framework/**'
+      - '.github/workflows/playwright.yml'
+  pull_request:
+    paths:
+      - 'playwright-framework/**'
+      - '.github/workflows/playwright.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    name: Cucumber (${{ matrix.browser }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+
+    defaults:
+      run:
+        working-directory: playwright-framework
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: playwright-framework/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run Cucumber tests
+        run: npm run test:${{ matrix.browser }}
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-report-${{ matrix.browser }}
+          path: |
+            playwright-framework/reports/cucumber-report.json
+            playwright-framework/reports/cucumber-report-inline.html
+            playwright-framework/reports/screenshots/
+          if-no-files-found: warn
