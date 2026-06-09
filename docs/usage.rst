@@ -2,6 +2,6 @@
 Usage
 =====
 
-To use lazy_qa in a project::
+To use qaforge in a project::
 
-	import lazy_qa
+	import qaforge

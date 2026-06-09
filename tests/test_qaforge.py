@@ -1,6 +1,6 @@
 
-from lazy_qa import longest
-from lazy_qa.cli import main
+from qaforge import longest
+from qaforge.cli import main
 
 
 def test_main():
