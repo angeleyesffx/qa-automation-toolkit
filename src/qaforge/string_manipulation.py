@@ -1,92 +1,74 @@
 import string
 import random
 
-# ---------------------------------------------------------------------------------------------------------------------#
-#                                       Functions to manipulate API Requests                                           #
-# ---------------------------------------------------------------------------------------------------------------------#
-
-# --------------------------------------------- Random String Functions -----------------------------------------------#
-
 
 def generate_unique_id(chars_number):
     """Generate N chars random string with Lowercase and Uppercase."""
-    unique_id = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(chars_number)])
-    return unique_id
+    return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(chars_number))
 
 
 def generate_unique_lowercase_id(chars_number):
     """Generate N chars random string with Lowercase."""
-    unique_id = ''.join([random.choice(string.ascii_lowercase + string.digits) for n in range(chars_number)])
-    return unique_id
+    return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(chars_number))
 
 
 def generate_unique_uppercase_id(chars_number):
     """Generate N chars random string with Uppercase."""
-    unique_id = ''.join([random.choice(string.ascii_uppercase + string.digits) for n in range(chars_number)])
-    return unique_id
+    return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(chars_number))
 
 
-def generate_unique_email(username, id, domain_list):
-    """Generate random email, combine generate_unique_id,  generate_unique_lowercase_id or
-    generate_unique_uppercase_id and a list of domains. """
-    email = username + '.' + id + random.choice(domain_list)
-    return email
-
-
-# ---------------------------------------------  String Manipulation Functions ----------------------------------------#
+def generate_unique_email(username, unique_id, domain_list):
+    """Generate random email from username, unique_id, and a random domain from domain_list."""
+    return username + '.' + unique_id + random.choice(domain_list)
 
 
 def split_string_between(string_value, slice_a, slice_b):
-    """Find and validate before-part and return middle part."""
+    """Return the substring between slice_a and slice_b, or empty string if not found."""
     pos_a = string_value.find(slice_a)
-    if pos_a == -1: return ""
-    # Find and validate after part.
+    if pos_a == -1:
+        return ""
     pos_b = string_value.rfind(slice_b)
-    if pos_b == -1: return ""
-    # Return middle part.
+    if pos_b == -1:
+        return ""
     adjusted_pos_a = pos_a + len(slice_a)
-    if adjusted_pos_a >= pos_b: return ""
+    if adjusted_pos_a >= pos_b:
+        return ""
     return string_value[adjusted_pos_a:pos_b]
 
 
 def split_string_before(string_value, slice_a):
-    """Find first part and return slice before it."""
+    """Return the substring before slice_a, or empty string if not found."""
     pos_a = string_value.find(slice_a)
-    if pos_a == -1: return ""
+    if pos_a == -1:
+        return ""
     return string_value[0:pos_a]
 
 
 def split_string_after(string_value, slice_a):
-    """Find and validate first part and returns chars after the found string."""
+    """Return the substring after the last occurrence of slice_a, or empty string if not found."""
     pos_a = string_value.rfind(slice_a)
-    if pos_a == -1: return ""
-    # Returns chars after the found string.
+    if pos_a == -1:
+        return ""
     adjusted_pos_a = pos_a + len(slice_a)
-    if adjusted_pos_a >= len(string_value): return ""
+    if adjusted_pos_a >= len(string_value):
+        return ""
     return string_value[adjusted_pos_a:]
 
 
 def remove_chars_from_string(string_value, char_list):
-    """Remove all characters in list from string."""
-    new_string = string_value
+    """Remove all characters in char_list from string_value."""
     for char in char_list:
-        # Remove the char in list from the string value.
-        new_string = new_string.replace(char, "")
-    return new_string
+        string_value = string_value.replace(char, "")
+    return string_value
 
 
 def replace_string_with(string_value, old_string, new_string):
-    # Replace the string for another value.
-    result_string = string_value.replace(old_string, new_string)
-    return result_string
+    return string_value.replace(old_string, new_string)
 
 
 def empty_string_to_none_string(string_value):
-    # Replace the string "" or '' for None.
-    if string_value == '' or "":
-        return None
-    else:
-        return string_value
+    """Return None if string_value is empty or None, otherwise return the original value."""
+    return None if not string_value else string_value
 
 
 def generate_random_number(number_of_digits):

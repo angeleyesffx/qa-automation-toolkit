@@ -1,165 +1,122 @@
 import json
+import os
 import jinja2
 
 
-# ---------------------------------------------------------------------------------------------------------------------#
-#                    Functions to manipulate JSON files information and responses                                      #
-# ---------------------------------------------------------------------------------------------------------------------#
-
-# ------------------------------------------------- JSON Functions ----------------------------------------------------#
-
-
 def load_json_as_string(json_file_path):
-    json_file = json_file_path
-    with open(json_file, 'r') as file:
-        json_data = json.loads(file)
-        return json_data
+    with open(json_file_path, 'r') as file:
+        return file.read()
 
 
 def load_json_as_dict(json_file_path):
-    json_file = json_file_path
-    with open(json_file, 'r') as file:
-        json_data = json.load(file)
-        return json_data
+    with open(json_file_path, 'r') as file:
+        return json.load(file)
 
 
 def get_json_keys(json_file_path):
-    json_file = load_json_as_dict(json_file_path)
-    return json_file.keys()
+    return load_json_as_dict(json_file_path).keys()
 
 
 def get_json_values(json_file_path):
-    json_file = load_json_as_dict(json_file_path)
-    return json_file.values()
+    return load_json_as_dict(json_file_path).values()
 
 
-def write_json_file(json_string):
-    new_json = json.dumps(json_string, sort_keys=True)
-    open("new_json.json", "w").write(new_json)
+def write_json_file(json_string, file_path="new_json.json"):
+    with open(file_path, "w") as f:
+        f.write(json.dumps(json_string, sort_keys=True))
 
 
 def find_key_and_replace_value_json(obj, key, value):
-    if key in obj:
-        obj[key] = value
-        return obj[key]
-    if type(obj) is str:
-        json.dumps(obj, indent=2, sort_keys=True)
-    if type(obj) is dict:
-        for k, v in obj.items():
-            if isinstance(v, dict):
-                item = find_key_and_replace_value_json(v, key, value)
-                if item is not None:
-                    return json.dumps(obj, indent=2, sort_keys=True)
-    elif type(obj) is list:
-        for k, v in enumerate(obj):
-            item = find_key_and_replace_value_json(v, key, value)
-            if item is not None:
+    if isinstance(obj, dict):
+        if key in obj:
+            obj[key] = value
+            return json.dumps(obj, indent=2, sort_keys=True)
+        for v in obj.values():
+            result = find_key_and_replace_value_json(v, key, value)
+            if result is not None:
                 return json.dumps(obj, indent=2, sort_keys=True)
+    elif isinstance(obj, list):
+        for item in obj:
+            result = find_key_and_replace_value_json(item, key, value)
+            if result is not None:
+                return json.dumps(obj, indent=2, sort_keys=True)
+    return None
 
 
 def convert_to_dict(data):
-    converted_data = None
-    if type(data) is list:
-        for index, item in enumerate(data):
-            # Convert to dict
-            converted_data = eval(data[index])
-            # Load json file
-    elif type(data) is dict:
-        converted_data = data
-    else:
-        print("\nType is different from 'list' or 'dict'")
-    return converted_data
+    if isinstance(data, list):
+        return data[0] if data else None
+    if isinstance(data, dict):
+        return data
+    print("\nType is different from 'list' or 'dict'")
+    return None
 
 
 def edit_json(json_data, args):
-    new_json = []
     for args_key, args_value in args.items():
-        for key, value in json_data.items():
-            if args_key == key and args_value != value:
-                json_data[key] = args_value
-            else:
-                new_json_data = json_data[key]
-                if (type(new_json_data) is dict) or (type(new_json_data) is list):
-                    item = find_key_and_replace_value_json(new_json_data, args_key, args_value)
-                    if (item is not None) or (type(item) is str):
-                        json.dumps(json_data, indent=2, sort_keys=True)
-    new_json.append(json_data)
-    return new_json
+        if args_key in json_data:
+            json_data[args_key] = args_value
+        else:
+            for val in json_data.values():
+                if isinstance(val, (dict, list)):
+                    find_key_and_replace_value_json(val, args_key, args_value)
+    return [json_data]
 
 
 def edit_template_json(json_file_path, args_data):
     new_json = []
-    json_file = json_file_path
-    if type(args_data) is list:
-        for index, item in enumerate(args_data):
-            # Convert to dict
-            args = eval(args_data[index])
-            # Load json file
-            with open(json_file, 'r') as file:
-                data = json.load(file)
-                # If .json starts with "[", Python will load as a list, so you need to convert it for to dict
-                json_data = convert_to_dict(data)
-                new_json_data = edit_json(json_data, args)
-                new_json.append(json.dumps(new_json_data, sort_keys=True))
-    if type(args_data) is dict:
-        args = args_data
-        with open(json_file, 'r') as file:
-            data = json.load(file)
-            # If .json starts with "[", Python will load as a list, so you need to convert it for to dict
-            json_data = convert_to_dict(data)
-            new_json = edit_json(json_data, args)
-            new_json.append(json.dumps(new_json_data, sort_keys=True))
+    if isinstance(args_data, list):
+        for item in args_data:
+            args = json.loads(item)
+            with open(json_file_path, 'r') as file:
+                json_data = convert_to_dict(json.load(file))
+            edited = edit_json(json_data, args)
+            new_json.append(json.dumps(edited, sort_keys=True))
+    elif isinstance(args_data, dict):
+        with open(json_file_path, 'r') as file:
+            json_data = convert_to_dict(json.load(file))
+        edited = edit_json(json_data, args_data)
+        new_json.append(json.dumps(edited, sort_keys=True))
     return new_json
 
 
 def create_payload(json_template_name, data, multiple_request):
     edited_json = template_editor(json_template_name, data, multiple_request)
-    body = get_beautified_payload(json_template_name, edited_json)
-    return body
+    return get_beautified_payload(json_template_name, edited_json)
 
 
 def get_template_from_folder(folder_path, template_name):
-    file_folder = jinja2.FileSystemLoader(searchpath=folder_path)
-    template_env = jinja2.Environment(loader=file_folder)
-    template = template_env.get_template(template_name)
-    return template
+    loader = jinja2.FileSystemLoader(searchpath=folder_path)
+    return jinja2.Environment(loader=loader).get_template(template_name)
 
 
 def template_editor(json_template_name, data, multiple_request):
-    if json_template_name != "None" and json_template_name != "none" and json_template_name is not None and data is not None:
-        json_template = json_template_name + ".json"
-        template = get_template_from_folder(os.path.join(os.getcwd(), "templates"), json_template)
-        if multiple_request and type(data) is list:
+    if json_template_name and json_template_name.lower() != "none" and data is not None:
+        template = get_template_from_folder(
+            os.path.join(os.getcwd(), "templates"),
+            json_template_name + ".json",
+        )
+        if multiple_request and isinstance(data, list):
             return [template.render(dict_list=[d]) for d in data]
-        else:
-            return template.render(dict_list=data)
-    else:
-        return data
+        return template.render(dict_list=data)
+    return data
 
 
 def get_beautified_payload(json_template_name, payload):
-    body_list = []
-    if type(payload) is not list:
+    if not isinstance(payload, list):
         body = payload.replace('\n', '').replace('"[', '[').replace(']"', ']').replace(
             '"{ ', '{').replace('}"', '}')
         return beautify_json(json_template_name, body)
-    else:
-        for body in payload:
-            body_list.append(beautify_json(json_template_name, body))
-        return body_list
+    return [beautify_json(json_template_name, body) for body in payload]
 
 
 def beautify_json(json_template_name, json_string):
     try:
         return json.dumps(json.loads(json_string), indent=4, ensure_ascii=False).encode('utf8')
-    except json.decoder.JSONDecodeError as err:  # includes simplejson.decoder.JSONDecodeError
+    except json.decoder.JSONDecodeError as err:
         body = json_string.replace('"[', '[').replace(']"', ']').replace(
             '"{ ', '{').replace('}"', '}').replace(' ', '')
-        error_message = "JSON error decoding file: '{0}'".format(err)
-        message = "Check if the template " + json_template_name + " is malformed. " \
-                                                                  "Check the body request, fix your template file" \
-                                                                  " and try again." \
-                                                                  "\nError Message: " + error_message + \
-                  "\nBODY REQUEST: " + body
-
-        raise Exception(message)
+        raise Exception(
+            f"Check if the template {json_template_name} is malformed and try again."
+            f"\nError: {err}\nBody: {body}"
+        )
