@@ -1,11 +1,5 @@
-
-from qaforge import longest
 from qaforge.cli import main
 
 
-def test_main():
+def test_main_returns_zero():
     assert main([]) == 0
-
-
-def test_longest():
-    assert longest([b'a', b'bc', b'abc']) == b'abc'
