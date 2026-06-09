@@ -6,6 +6,7 @@ from qaforge.csv_builder import (
     get_scenario_data_csv,
     get_group_key,
     delete_output_file,
+    converter_pandas_csv_json,
 )
 
 
@@ -99,3 +100,22 @@ def test_delete_output_file_removes_existing_file(tmp_path):
 
 def test_delete_output_file_does_not_raise_when_missing(tmp_path):
     delete_output_file(str(tmp_path / "nonexistent.txt"))
+
+
+# --- converter_pandas_csv_json ---
+
+def test_converter_pandas_csv_json_returns_string(simple_csv):
+    result = converter_pandas_csv_json(simple_csv)
+    assert isinstance(result, str)
+
+
+def test_converter_pandas_csv_json_returns_json_array(simple_csv):
+    result = json.loads(converter_pandas_csv_json(simple_csv))
+    assert isinstance(result, list)
+    assert len(result) == 2
+
+
+def test_converter_pandas_csv_json_parses_values(simple_csv):
+    result = json.loads(converter_pandas_csv_json(simple_csv))
+    assert result[0]["name"] == "alice"
+    assert result[1]["name"] == "bob"

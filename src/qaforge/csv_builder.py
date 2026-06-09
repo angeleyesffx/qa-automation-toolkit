@@ -36,3 +36,8 @@ def get_scenario_data_csv(csv_file_path, test_scenario_id):
             for row in csv.DictReader(csv_file)
             if test_scenario_id == row["test_scenario_id"]
         ]
+
+
+def converter_pandas_csv_json(data_path):
+    with open(data_path, 'r') as f:
+        return json.dumps(list(csv.DictReader(f)))

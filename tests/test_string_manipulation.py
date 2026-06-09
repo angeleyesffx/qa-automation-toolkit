@@ -99,6 +99,10 @@ def test_split_string_between_returns_empty_when_not_found():
     assert split_string_between("no brackets here", "[", "]") == ""
 
 
+def test_split_string_between_returns_empty_when_only_open():
+    assert split_string_between("hello[world", "[", "]") == ""
+
+
 def test_split_string_between_returns_empty_when_adjacent():
     assert split_string_between("[]", "[", "]") == ""
 
@@ -125,6 +129,10 @@ def test_split_string_after_returns_empty_when_not_found():
 
 def test_split_string_after_uses_last_occurrence():
     assert split_string_after("a/b/c", "/") == "c"
+
+
+def test_split_string_after_returns_empty_when_delimiter_is_at_end():
+    assert split_string_after("hello/", "/") == ""
 
 
 # --- remove_chars_from_string ---

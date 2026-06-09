@@ -17,7 +17,7 @@ def remove_item_from_list(items, item):
     return result
 
 
-def get_random_item_from_list(items):
+def get_random_item_from_list(items, item=None):
     return random.choice(items)
 
 

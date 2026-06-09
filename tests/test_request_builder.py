@@ -6,6 +6,8 @@ from qaforge.request_builder import (
     zip_payload,
     select_request,
     split,
+    print_request_and_exit,
+    get_multiple_requests,
 )
 
 
@@ -78,6 +80,22 @@ def test_get_access_token_returns_none_when_key_missing(mock_auth):
     assert result is None
 
 
+@patch("qaforge.request_builder.select_request")
+def test_response_from_auth_propagates_verify(mock_select):
+    mock_select.return_value = None
+    response_from_auth("post", "http://example.com", {}, verify=False)
+    _, kwargs = mock_select.call_args
+    assert kwargs.get("verify") is False
+
+
+@patch("qaforge.request_builder.response_from_auth")
+def test_get_access_token_propagates_verify(mock_auth):
+    mock_auth.return_value = {"token": "abc"}
+    get_access_token("token", "post", "http://example.com", {}, verify=False)
+    _, kwargs = mock_auth.call_args
+    assert kwargs.get("verify") is False
+
+
 # --- select_request ---
 
 @patch("qaforge.request_builder.requests.request")
@@ -114,3 +132,48 @@ def test_select_request_get_iterates_payload(mock_get):
 def test_select_request_unknown_method_returns_none():
     result = select_request("patch", "http://example.com", {}, {})
     assert result is None
+
+
+@patch("qaforge.request_builder.requests.request")
+def test_select_request_multiple_request_delegates_to_get_multiple(mock_request, capsys):
+    mock_request.return_value = MagicMock(status_code=200)
+    headers = {"requestTraceId": "test"}
+    select_request("post", "http://example.com", ["payload1", "payload2"], headers, multiple_request=True)
+    assert mock_request.call_count == 2
+
+
+# --- print_request_and_exit ---
+
+def test_print_request_and_exit_outputs_debug_info(capsys):
+    print_request_and_exit("post", "http://example.com", {"Authorization": "Bearer token"}, '{"key": "value"}', False)
+    captured = capsys.readouterr()
+    assert "DEBUG MODE" in captured.out
+    assert "http://example.com" in captured.out
+    assert "post" in captured.out
+
+
+def test_print_request_and_exit_with_zipped_payload(capsys):
+    zipped = zip_payload('{"key": "value"}')
+    print_request_and_exit("post", "http://example.com", {}, zipped, True)
+    captured = capsys.readouterr()
+    assert "key" in captured.out
+
+
+# --- get_multiple_requests ---
+
+@patch("qaforge.request_builder.requests.request")
+def test_get_multiple_requests_sends_one_request_per_payload(mock_request):
+    mock_request.return_value = MagicMock(status_code=200)
+    headers = {"requestTraceId": "trace-123", "Content-Type": "application/json"}
+    result = get_multiple_requests("post", "http://example.com", headers, ["p1", "p2", "p3"])
+    assert len(result) == 3
+    assert mock_request.call_count == 3
+
+
+@patch("qaforge.request_builder.requests.request")
+def test_get_multiple_requests_appends_part_index_to_trace_id(mock_request):
+    mock_request.return_value = MagicMock(status_code=200)
+    headers = {"requestTraceId": "trace", "Content-Type": "application/json"}
+    get_multiple_requests("post", "http://example.com", headers, ["p1", "p2"])
+    first_call_headers = mock_request.call_args_list[0][1]["headers"]
+    assert "_part_1_of_2" in first_call_headers["requestTraceId"]

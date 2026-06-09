@@ -48,8 +48,7 @@ def convert_to_dict(data):
         return data[0] if data else None
     if isinstance(data, dict):
         return data
-    print("\nType is different from 'list' or 'dict'")
-    return None
+    raise TypeError(f"Expected list or dict, got {type(data).__name__}")
 
 
 def edit_json(json_data, args):

@@ -6,7 +6,7 @@ import requests
 import zlib
 
 
-def response_from_auth(method, url, payload):
+def response_from_auth(method, url, payload, verify=True):
     if method is None:
         print("Auth failed: method is None.")
         return None
@@ -14,16 +14,16 @@ def response_from_auth(method, url, payload):
         'requestTraceId': "TestData-" + method,
         'Content-Type': 'application/x-www-form-urlencoded',
     }
-    response = select_request(method, url, payload, headers)
+    response = select_request(method, url, payload, headers, verify=verify)
     if response is not None:
         return response.json()
     print(f"Auth failed for method {method}. Check your configuration and try again.")
     return None
 
 
-def get_access_token(key, method, url, payload):
+def get_access_token(key, method, url, payload, verify=True):
     print("\nGetting Token Authentication...")
-    data = response_from_auth(method, url, payload)
+    data = response_from_auth(method, url, payload, verify=verify)
     if data and key in data:
         return str(data[key])
     return None
@@ -58,23 +58,23 @@ def split(list_a, chunk_size):
         yield list_a[i:i + chunk_size]
 
 
-def get_multiple_requests(method, url, headers, payload):
+def get_multiple_requests(method, url, headers, payload, verify=True):
     response = []
     for idx, e in enumerate(payload):
         new_headers = headers[idx] if isinstance(headers, list) else dict(headers)
         new_headers['requestTraceId'] = f"{new_headers['requestTraceId']}_part_{idx + 1}_of_{len(payload)}"
         new_headers['x-timestamp'] = str(calendar.timegm(time.gmtime()))
-        response.append(requests.request(method, url, data=e, headers=new_headers))
+        response.append(requests.request(method, url, data=e, headers=new_headers, verify=verify))
     return response
 
 
-def select_request(method, url, payload, headers, multiple_request=False):
+def select_request(method, url, payload, headers, multiple_request=False, verify=True):
     if method in ("post", "put", "delete"):
         if multiple_request:
-            return get_multiple_requests(method, url, headers, payload)
-        return requests.request(method, url, data=payload, headers=headers, verify=False)
+            return get_multiple_requests(method, url, headers, payload, verify=verify)
+        return requests.request(method, url, data=payload, headers=headers, verify=verify)
     if method == "get":
         payloads = payload if isinstance(payload, list) else [payload]
-        return [requests.get(url, headers=headers, params=p, verify=False) for p in payloads]
+        return [requests.get(url, headers=headers, params=p, verify=verify) for p in payloads]
     print(f"Method {method} is not supported.")
     return None

@@ -3,62 +3,15 @@
 
 import io
 import os
-import platform
 import re
 from glob import glob
 from os.path import basename
 from os.path import dirname
 from os.path import join
-from os.path import relpath
 from os.path import splitext
 
-from setuptools import Extension
 from setuptools import find_packages
 from setuptools import setup
-from setuptools.command.build_ext import build_ext
-from setuptools.dist import Distribution
-
-# Enable code coverage for C code: we can't use CFLAGS=-coverage in tox.ini, since that may mess with compiling
-# dependencies (e.g. numpy). Therefore we set SETUPPY_CFLAGS=-coverage in tox.ini and copy it to CFLAGS here (after
-# deps have been safely installed).
-if 'TOX_ENV_NAME' in os.environ and os.environ.get('SETUPPY_EXT_COVERAGE') == 'yes' and platform.system() == 'Linux':
-    CFLAGS = os.environ['CFLAGS'] = '-fprofile-arcs -ftest-coverage'
-    LFLAGS = os.environ['LFLAGS'] = '-lgcov'
-else:
-    CFLAGS = ''
-    LFLAGS = ''
-
-
-class OptionalBuildExt(build_ext):
-    """Allow the building of C extensions to fail."""
-    def run(self):
-        try:
-            if os.environ.get('SETUPPY_FORCE_PURE'):
-                raise Exception('C extensions disabled (SETUPPY_FORCE_PURE)!')
-            super().run()
-        except Exception as e:
-            self._unavailable(e)
-            self.extensions = []  # avoid copying missing files (it would fail).
-
-    def _unavailable(self, e):
-        print('*' * 80)
-        print('''WARNING:
-
-    An optional code optimization (C extension) could not be compiled.
-
-    Optimizations for this package will not be available!
-        ''')
-
-        print('CAUSE:')
-        print('')
-        print('    ' + repr(e))
-        print('*' * 80)
-
-
-class BinaryDistribution(Distribution):
-    """Distribution which almost always forces a binary package with platform name"""
-    def has_ext_modules(self):
-        return super().has_ext_modules() or not os.environ.get('SETUPPY_ALLOW_PURE')
 
 
 def read(*names, **kwargs):
@@ -74,7 +27,7 @@ setup(
         'fallback_version': '0.0.4',
     },
     license='MIT',
-    description='  ',
+    description='QA automation toolkit: helpers for requests, JSON, CSV, YAML, databases and data generation.',
     long_description='{}\n{}'.format(
         re.compile('^.. start-badges.*^.. end-badges', re.M | re.S).sub('', read('README.rst')),
         re.sub(':[a-z]+:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst')),
@@ -88,7 +41,6 @@ setup(
     include_package_data=True,
     zip_safe=False,
     classifiers=[
-        # complete classifier list: http://pypi.python.org/pypi?%3Aaction=list_classifiers
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
@@ -98,17 +50,11 @@ setup(
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3 :: Only',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
         'Programming Language :: Python :: Implementation :: CPython',
-        'Programming Language :: Python :: Implementation :: PyPy',
-        # uncomment if you test on these interpreters:
-        # 'Programming Language :: Python :: Implementation :: IronPython',
-        # 'Programming Language :: Python :: Implementation :: Jython',
-        # 'Programming Language :: Python :: Implementation :: Stackless',
         'Topic :: Utilities',
     ],
     project_urls={
@@ -116,20 +62,16 @@ setup(
         'Changelog': 'https://qaforge.readthedocs.io/en/latest/changelog.html',
         'Issue Tracker': 'https://github.com/angeleyesffx/qaforge/issues',
     },
-    keywords=[
-        # eg: 'keyword1', 'keyword2', 'keyword3',
-    ],
-    python_requires='>=3.6',
+    keywords=['qa', 'automation', 'testing', 'toolkit'],
+    python_requires='>=3.9',
     install_requires=[
-        # eg: 'aspectlib==1.1.1', 'six>=1.7',
+        'Jinja2~=3.1',
+        'PyMySQL~=1.0',
+        'psycopg2-binary~=2.9',
+        'pyyaml~=6.0',
+        'requests~=2.28',
     ],
-    extras_require={
-        # eg:
-        #   'rst': ['docutils>=0.11'],
-        #   ':python_version=="2.6"': ['argparse'],
-    },
     setup_requires=[
-        'pytest-runner',
         'setuptools_scm>=3.3.1',
     ],
     entry_points={
@@ -137,17 +79,4 @@ setup(
             'qaforge = qaforge.cli:main',
         ]
     },
-    cmdclass={'build_ext': OptionalBuildExt},
-    ext_modules=[
-        Extension(
-            splitext(relpath(path, 'src').replace(os.sep, '.'))[0],
-            sources=[path],
-            extra_compile_args=CFLAGS.split(),
-            extra_link_args=LFLAGS.split(),
-            include_dirs=[dirname(path)]
-        )
-        for root, _, _ in os.walk('src')
-        for path in glob(join(root, '*.c'))
-    ],
-    distclass=BinaryDistribution,
 )
