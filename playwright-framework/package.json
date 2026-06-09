@@ -1,0 +1,22 @@
+{
+  "name": "playwright-framework",
+  "version": "1.0.0",
+  "description": "Playwright + Cucumber TypeScript automation framework for the-internet.herokuapp.com",
+  "author": "Priscilla R Martins",
+  "private": true,
+  "scripts": {
+    "test:cucumber": "cucumber-js --config cucumber.config.js",
+    "test:chromium": "cross-env BROWSER=chromium cucumber-js --config cucumber.config.js",
+    "test:firefox": "cross-env BROWSER=firefox cucumber-js --config cucumber.config.js",
+    "test:webkit": "cross-env BROWSER=webkit cucumber-js --config cucumber.config.js",
+    "test:all": "npm run test:chromium && npm run test:firefox && npm run test:webkit"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^11.2.0",
+    "@playwright/test": "^1.54.0",
+    "@types/node": "^24.0.3",
+    "cross-env": "^7.0.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
