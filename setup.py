@@ -67,10 +67,10 @@ def read(*names, **kwargs):
 
 
 setup(
-    name='lazy-qa',
+    name='qaforge',
     use_scm_version={
         'local_scheme': 'dirty-tag',
-        'write_to': 'src/lazy_qa/_version.py',
+        'write_to': 'src/qaforge/_version.py',
         'fallback_version': '0.0.4',
     },
     license='MIT',
@@ -81,7 +81,7 @@ setup(
     ),
     author='Priscilla Rodrigues Martins',
     author_email='angeleyes.ffx@hotmail.com',
-    url='https://github.com/angeleyesffx/lazy_qa',
+    url='https://github.com/angeleyesffx/qaforge',
     packages=find_packages('src'),
     package_dir={'': 'src'},
     py_modules=[splitext(basename(path))[0] for path in glob('src/*.py')],
@@ -112,9 +112,9 @@ setup(
         'Topic :: Utilities',
     ],
     project_urls={
-        'Documentation': 'https://lazy_qa.readthedocs.io/',
-        'Changelog': 'https://lazy_qa.readthedocs.io/en/latest/changelog.html',
-        'Issue Tracker': 'https://github.com/angeleyesffx/lazy_qa/issues',
+        'Documentation': 'https://qaforge.readthedocs.io/',
+        'Changelog': 'https://qaforge.readthedocs.io/en/latest/changelog.html',
+        'Issue Tracker': 'https://github.com/angeleyesffx/qaforge/issues',
     },
     keywords=[
         # eg: 'keyword1', 'keyword2', 'keyword3',
@@ -134,7 +134,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'lazy-qa = lazy_qa.cli:main',
+            'qaforge = qaforge.cli:main',
         ]
     },
     cmdclass={'build_ext': OptionalBuildExt},

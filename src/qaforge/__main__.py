@@ -1,5 +1,5 @@
 """
-Entrypoint module, in case you use `python -mlazy_qa`.
+Entrypoint module, in case you use `python -mqaforge`.
 
 
 Why does this file exist, and why __main__? For more info, read:
@@ -10,7 +10,7 @@ Why does this file exist, and why __main__? For more info, read:
 """
 import sys
 
-from lazy_qa.cli import main
+from qaforge.cli import main
 
 if __name__ == "__main__":
     sys.exit(main())

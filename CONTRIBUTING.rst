@@ -8,7 +8,7 @@ little bit helps, and credit will always be given.
 Bug reports
 ===========
 
-When `reporting a bug <https://github.com/angeleyesffx/lazy_qa/issues>`_ please include:
+When `reporting a bug <https://github.com/angeleyesffx/qaforge/issues>`_ please include:
 
     * Your operating system name and version.
     * Any details about your local setup that might be helpful in troubleshooting.
@@ -17,14 +17,14 @@ When `reporting a bug <https://github.com/angeleyesffx/lazy_qa/issues>`_ please 
 Documentation improvements
 ==========================
 
-lazy_qa could always use more documentation, whether as part of the
-official lazy_qa docs, in docstrings, or even on the web in blog posts,
+qaforge could always use more documentation, whether as part of the
+official qaforge docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
 Feature requests and feedback
 =============================
 
-The best way to send feedback is to file an issue at https://github.com/angeleyesffx/lazy_qa/issues.
+The best way to send feedback is to file an issue at https://github.com/angeleyesffx/qaforge/issues.
 
 If you are proposing a feature:
 
@@ -35,13 +35,13 @@ If you are proposing a feature:
 Development
 ===========
 
-To set up `lazy_qa` for local development:
+To set up `qaforge` for local development:
 
-1. Fork `lazy_qa <https://github.com/angeleyesffx/lazy_qa>`_
+1. Fork `qaforge <https://github.com/angeleyesffx/qaforge>`_
    (look for the "Fork" button).
 2. Clone your fork locally::
 
-    git clone git@github.com:YOURGITHUBNAME/lazy_qa.git
+    git clone git@github.com:YOURGITHUBNAME/qaforge.git
 
 3. Create a branch for local development::
 

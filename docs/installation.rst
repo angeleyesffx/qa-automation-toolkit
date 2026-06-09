@@ -4,4 +4,4 @@ Installation
 
 At the command line::
 
-    pip install lazy-qa
+    pip install qaforge

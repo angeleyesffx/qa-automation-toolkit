@@ -17,13 +17,13 @@ extensions = [
 ]
 source_suffix = '.rst'
 master_doc = 'index'
-project = 'lazy_qa'
+project = 'qaforge'
 year = '2022'
 author = 'Priscilla Rodrigues Martins'
 copyright = '{0}, {1}'.format(year, author)
 try:
     from pkg_resources import get_distribution
-    version = release = get_distribution('lazy_qa').version
+    version = release = get_distribution('qaforge').version
 except Exception:
     traceback.print_exc()
     version = release = '0.0.0'
@@ -31,8 +31,8 @@ except Exception:
 pygments_style = 'trac'
 templates_path = ['.']
 extlinks = {
-    'issue': ('https://github.com/angeleyesffx/lazy_qa/issues/%s', '#'),
-    'pr': ('https://github.com/angeleyesffx/lazy_qa/pull/%s', 'PR #'),
+    'issue': ('https://github.com/angeleyesffx/qaforge/issues/%s', '#'),
+    'pr': ('https://github.com/angeleyesffx/qaforge/pull/%s', 'PR #'),
 }
 # on_rtd is whether we are on readthedocs.org
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
