@@ -12,13 +12,13 @@ qaforge
     * - package
       - |version| |supported-versions|
 
-.. |github-actions| image:: https://github.com/angeleyesffx/qaforge/actions/workflows/github-actions.yml/badge.svg
+.. |github-actions| image:: https://github.com/angeleyesffx/qa-automation-toolkit/actions/workflows/github-actions.yml/badge.svg
     :alt: GitHub Actions Build Status
-    :target: https://github.com/angeleyesffx/qaforge/actions
+    :target: https://github.com/angeleyesffx/qa-automation-toolkit/actions
 
-.. |codecov| image:: https://codecov.io/gh/angeleyesffx/qaforge/branch/master/graphs/badge.svg?branch=master
+.. |codecov| image:: https://codecov.io/gh/angeleyesffx/qa-automation-toolkit/branch/master/graphs/badge.svg?branch=master
     :alt: Coverage Status
-    :target: https://codecov.io/github/angeleyesffx/qaforge
+    :target: https://codecov.io/github/angeleyesffx/qa-automation-toolkit
 
 .. |version| image:: https://img.shields.io/pypi/v/qaforge.svg
     :alt: PyPI Package latest release
